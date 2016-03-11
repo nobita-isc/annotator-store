@@ -79,13 +79,24 @@ def main(argv):
             raise
 
     @app.before_request
-    def before_request():
+    def before_request(request):
         # In a real app, the current user and consumer would be determined by
         # a lookup in either the session or the request headers, as described
         # in the Annotator authentication documentation[1].
         #
         # [1]: https://github.com/okfn/annotator/wiki/Authentication
-        g.user = MockUser('alice')
+        
+        # Set login username
+        # Other server should transfer username and consumer key to this ser-
+        # ver. 2 problems here
+        # 1. How to transfer the username and consumerkey (request headers)
+        #    Consumer key must be unique identifier for user name
+        #    Same consumer key result in same permission
+        #    Must secure the app by:
+        #           Checking requested origin (trusted server only)
+        #           Making consumer key unique and secure
+        # 2. How to control role in this case.
+        g.user = MockUser('alice', 'consumerkey')
 
         # By default, this test application won't do full-on authentication
         # tests. Set AUTH_ON to True in the config file to enable (limited)
@@ -106,7 +117,7 @@ def main(argv):
 
     app.register_blueprint(store.store)
 
-    host = os.environ.get('HOST', '127.0.0.1')
+    host = os.environ.get('HOST', '0.0.0.0')
     port = int(os.environ.get('PORT', 5000))
     app.run(host=host, port=port)
 
