@@ -11,7 +11,7 @@ class Consumer(object):
     def __init__(self, key='', secret='', ttl=DEFAULT_TTL):
         self.key = key
         self.secret = secret
-        selft.ttl = ttl
+        self.ttl = ttl
 
 
 class User(object):
