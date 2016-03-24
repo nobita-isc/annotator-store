@@ -66,7 +66,7 @@ def main(argv):
         es.authorization_enabled = app.config['AUTHZ_ON']
 
     @app.before_request
-    def before_request(request):
+    def before_request():
         # Setting authentication
         # Getting current user and checking for permission
         if current_app.config['AUTH_ON']:
