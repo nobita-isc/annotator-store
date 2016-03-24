@@ -8,8 +8,10 @@ DEFAULT_TTL = 86400
 
 
 class Consumer(object):
-    def __init__(self, key):
+    def __init__(self, key='', secret='', ttl=DEFAULT_TTL):
         self.key = key
+        self.secret = secret
+        selft.ttl = ttl
 
 
 class User(object):
@@ -69,7 +71,7 @@ class Authenticator(object):
         Arguments:
         request -- a Flask Request object
         """
-
+        # Get token from request
         token = request.headers.get('x-annotator-auth-token')
         if token is None:
             return False
@@ -106,7 +108,7 @@ def encode_token(token, secret):
     return jwt.encode(token, secret)
 
 
-def decode_token(token, secret='', ttl=DEFAULT_TTL, verify=True):
+def decode_token(token, secret='', ttl=DEFAULT_TTL, verify=False):
     try:
         if not isinstance(token, bytes):
             if six.PY3:

@@ -21,8 +21,6 @@ import time
 from flask import Flask, g, current_app
 import elasticsearch
 from annotator import es, annotation, auth, authz, document, store
-from tests.helpers import MockUser, MockConsumer, MockAuthenticator
-from tests.helpers import mock_authorizer
 
 logging.basicConfig(format='%(asctime)s %(process)d %(name)s [%(levelname)s] '
                            '%(message)s',
@@ -34,6 +32,11 @@ log = logging.getLogger('annotator')
 
 here = os.path.dirname(__file__)
 
+# sha256 hash of the string
+# 'Manga Annotation Application will bring us a bright future'
+APP_KEY = 'd0e1bce08234f4c822f469bb576318e46e651e29baa03735bfe1e0146c390e7d'
+# sha256 hash of the string 'congdongvietnhat@vietnam123'
+SECRET_KEY = '7817b11e9ff77f249ab76e722e145f40b1def75e376f220c649254456c6ccace'
 
 def main(argv):
     app = Flask(__name__)
@@ -62,63 +65,22 @@ def main(argv):
     if app.config.get('AUTHZ_ON') is not None:
         es.authorization_enabled = app.config['AUTHZ_ON']
 
-    with app.test_request_context():
-        try:
-            annotation.Annotation.create_all()
-            document.Document.create_all()
-        except elasticsearch.exceptions.RequestError as e:
-            if e.error.startswith('MergeMappingException'):
-                date = time.strftime('%Y-%m-%d')
-                log.fatal("Elasticsearch index mapping is incorrect! Please "
-                          "reindex it. You can use reindex.py for this, e.g. "
-                          "python reindex.py --host %s %s %s-%s",
-                          es.host,
-                          es.index,
-                          es.index,
-                          date)
-            raise
-
     @app.before_request
     def before_request(request):
-        # In a real app, the current user and consumer would be determined by
-        # a lookup in either the session or the request headers, as described
-        # in the Annotator authentication documentation[1].
-        #
-        # [1]: https://github.com/okfn/annotator/wiki/Authentication
-        
-        # Set login username
-        # Other server should transfer username and consumer key to this ser-
-        # ver. 2 problems here
-        # 1. How to transfer the username and consumerkey (request headers)
-        #    Consumer key must be unique identifier for user name
-        #    Same consumer key result in same permission
-        #    Must secure the app by:
-        #           Checking requested origin (trusted server only)
-        #           Making consumer key unique and secure
-        # 2. How to control role in this case.
-        g.user = MockUser('alice', 'consumerkey')
-
-        # By default, this test application won't do full-on authentication
-        # tests. Set AUTH_ON to True in the config file to enable (limited)
-        # authentication testing.
+        # Setting authentication
+        # Getting current user and checking for permission
         if current_app.config['AUTH_ON']:
-            g.auth = auth.Authenticator(lambda x: MockConsumer('annotateit'))
-        else:
-            g.auth = MockAuthenticator()
+            g.auth = auth.Authenticator(lambda x: auth.Consumer(APP_KEY, SECRET_KEY))
 
-        # Similarly, this test application won't prevent you from modifying
-        # annotations you don't own, deleting annotations you're disallowed
-        # from deleting, etc. Set AUTHZ_ON to True in the config file to
-        # enable authorization testing.
+        # Setting authorization
         if current_app.config['AUTHZ_ON']:
             g.authorize = authz.authorize
-        else:
-            g.authorize = mock_authorizer
 
     app.register_blueprint(store.store)
 
+    # Expose address for external access (ANY BIND)
     host = os.environ.get('HOST', '0.0.0.0')
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 80))
     app.run(host=host, port=port)
 
 if __name__ == '__main__':
