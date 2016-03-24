@@ -1,0 +1,18 @@
+version: '2'
+services:
+  annotations_storage:
+    build: .
+    images: nobita/annotator-storage:1.3
+    container_name: annotations_storage
+    ports:
+     - "80:80"
+    depends_on:
+     - elastic_search
+    restart: always
+
+  elastic_search:
+    image: elasticsearch:1.7.5
+    container_name: elastic_search
+    restart: always
+    volumes:
+     - "$PWD/esdata":/usr/share/elasticsearch/data elasticsearch
