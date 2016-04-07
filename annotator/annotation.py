@@ -56,7 +56,7 @@ class Annotation(es.Model):
 
     @classmethod
     def search_raw(cls, query=None, params=None, raw_result=False,
-                   user=None, authorization_enabled=None):
+                   user=None, authorization_enabled=None, is_query_index=False):
         """Perform a raw Elasticsearch query
 
         Any ElasticsearchExceptions are to be caught by the caller.
@@ -76,6 +76,8 @@ class Annotation(es.Model):
             f = authz.permissions_filter(user)
             if not f:
                 raise RuntimeError("Authorization filter creation failed")
+            if is_query_index:
+                f = None
             filtered_query = {
                 'filtered': {
                     'filter': f

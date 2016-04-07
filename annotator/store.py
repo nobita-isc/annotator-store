@@ -145,7 +145,8 @@ def index():
     else:
         user = None
 
-    annotations = g.annotation_class.search(user=user)
+    # Allow every user to view annotations by set is_query_index flag to True
+    annotations = g.annotation_class.search(user=user, is_query_index=True)
     return jsonify(annotations)
 
 # CREATE
