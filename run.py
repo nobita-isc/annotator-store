@@ -1,16 +1,4 @@
 #!/usr/bin/env python
-"""
-run.py: A simple example app for using the Annotator Store blueprint
-
-This file creates and runs a Flask[1] application which mounts the Annotator
-Store blueprint at its root. It demonstrates how the major components of the
-Annotator Store (namely the 'store' blueprint, the annotation model and the
-auth and authz helper modules) fit together, but it is emphatically NOT
-INTENDED FOR PRODUCTION USE.
-
-[1]: http://flask.pocoo.org
-"""
-
 from __future__ import print_function
 
 import os
@@ -31,12 +19,6 @@ logging.getLogger('urllib3').setLevel(logging.WARN)
 log = logging.getLogger('annotator')
 
 here = os.path.dirname(__file__)
-
-# sha256 hash of the string
-# 'Manga Annotation Application will bring us a bright future'
-APP_KEY = 'd0e1bce08234f4c822f469bb576318e46e651e29baa03735bfe1e0146c390e7d'
-# sha256 hash of the string 'congdongvietnhat@vietnam123'
-SECRET_KEY = '7817b11e9ff77f249ab76e722e145f40b1def75e376f220c649254456c6ccace'
 
 def main(argv):
     app = Flask(__name__)
@@ -65,12 +47,15 @@ def main(argv):
     if app.config.get('AUTHZ_ON') is not None:
         es.authorization_enabled = app.config['AUTHZ_ON']
 
+    CONSUMER_KEY = os.environ.get('CONSUMER_KEY', 'consumer-key')
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'secret-key')
+
     @app.before_request
     def before_request():
         # Setting authentication
         # Getting current user and checking for permission
         if current_app.config['AUTH_ON']:
-            g.auth = auth.Authenticator(lambda x: auth.Consumer(APP_KEY, SECRET_KEY))
+            g.auth = auth.Authenticator(lambda x: auth.Consumer(CONSUMER_KEY, SECRET_KEY))
 
         # Setting authorization
         if current_app.config['AUTHZ_ON']:
