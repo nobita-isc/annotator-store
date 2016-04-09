@@ -88,9 +88,7 @@ def permissions_filter(user=None):
 
         # Scenario 2
         perm_f['or'].append(
-            {'and': [{'term': {'consumer': user.consumer.key}},
-                     {'or': [{'term': {'user': user.id}},
-                             {'term': {'user.id': user.id}}]}]})
+            {'term': {'consumer': user.consumer.key}})
 
         # Scenario 3
         perm_f['or'].append(

@@ -195,7 +195,10 @@ class _Model(dict):
                                  doc_type=self.__type__,
                                  body=self,
                                  op_type=op_type,
-                                 refresh=refresh)
+                                 refresh=refresh,
+                                 # Specify id to update the annotation
+                                 # Otherwise new one will be created
+                                 id=None if 'id' not in self else self['id'])
         self['id'] = res['_id']
 
     def delete(self):

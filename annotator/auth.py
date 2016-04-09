@@ -4,7 +4,8 @@ import iso8601
 import jwt
 import six
 
-DEFAULT_TTL = 86400
+# Default log in time is 7 days
+DEFAULT_TTL = 86400*7
 
 
 class Consumer(object):
@@ -108,7 +109,7 @@ def encode_token(token, secret):
     return jwt.encode(token, secret)
 
 
-def decode_token(token, secret='', ttl=DEFAULT_TTL, verify=False):
+def decode_token(token, secret='', ttl=DEFAULT_TTL, verify=True):
     try:
         if not isinstance(token, bytes):
             if six.PY3:

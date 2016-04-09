@@ -7,6 +7,7 @@
     <script src="../annotorious.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
+    <script type="text/javascript" src="annotation.js"></script>
     <style>
       html, body {
         background-color:#dfdfdf;
@@ -58,6 +59,8 @@
       <h2>Demo Image</h2>
       <div style="float:right; margin:10px 0px 10px 30px;">
         <img src="640px-Hallstatt.jpg" class="annotatable">
+
+        <img src="640px-Hallstatt_1.jpg" class="annotatable"/>
         <p class="image-caption">
           Hallstatt, Austria. By Nick Csakany, 2007. Public Domain. Source:
           <a href="http://commons.wikimedia.org/wiki/File:Hallstatt_300.jpg">Wikimedia
@@ -110,14 +113,15 @@
       </p>
 
       <pre><code>&lt;script&gt;
-  function init() {
-    anno.makeAnnotatable(document.getElementById('myImage'));
-  }
+  //function init() {
+  //  anno.makeAnnotatable(document.getElementById('myImage'));
+  //}
 &lt;/script&gt;
 ...
 &lt;body onload=&quot;init();&quot;&gt;
   &lt;img src=&quot;example.jpg&quot; id=&quot;myImage&quot; /&gt;
 &lt;/body&gt;</code></pre>
+
 
 
       <h2>And Next?</h2>
@@ -140,82 +144,6 @@
         <a href="http://annotorious.github.com/latest/annotorious.min.js">http://annotorious.github.com/latest/annotorious.min.js</a><br/>
         <a href="http://annotorious.github.com/latest/annotorious.css">http://annotorious.github.com/latest/annotorious.css</a>
       </p>
-      <script type="text/javascript">
-        anno.addHandler('onAnnotationCreated', function(annotation) {
-          annotation.context=annotation.context.split("?")[0]; 
-          // if the item page has querystring parameters, 
-          // this causes the JSON.parse to fail on the server, so just strip them off here
-          // alert(JSON.stringify(annotation))
-          jQuery.ajax({
-            type: "POST",
-            url: "http://192.168.99.100/annotations",
-            dataType: "JSON",
-            data: JSON.stringify(annotation),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            headers: {
-              'x-annotator-auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb25zdW1lcktleSI6ImQwZTFiY2UwODIzNGY0YzgyMmY0NjliYjU3NjMxOGU0NmU2NTFlMjliYWEwMzczNWJmZTFlMDE0NmMzOTBlN2QiLCJ1c2VySWQiOiJub2JpdGEifQ.DVSukxH1fN5-xUOasPyxxAmdwtUc_MTSwnDDUh1-4cI'
-            },
-            success: function(data) {
-            }
-            });
-          });
-
-        anno.addHandler('onAnnotationUpdated', function(annotation) {
-          annotation.context=annotation.context.split("?")[0]; 
-          // if the item page has querystring parameters, 
-          // this causes the JSON.parse to fail on the server, so just strip them off here
-          // alert(JSON.stringify(annotation))
-          jQuery.ajax({
-            type: "PUT",
-            url: "http://192.168.99.100/annotations/" + annotation.id,
-            dataType: "JSON",
-            data: JSON.stringify(annotation),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            headers: {
-              'x-annotator-auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb25zdW1lcktleSI6ImQwZTFiY2UwODIzNGY0YzgyMmY0NjliYjU3NjMxOGU0NmU2NTFlMjliYWEwMzczNWJmZTFlMDE0NmMzOTBlN2QiLCJ1c2VySWQiOiJub2JpdGEifQ.DVSukxH1fN5-xUOasPyxxAmdwtUc_MTSwnDDUh1-4cI'
-            },
-            success: function(data) {
-            }
-            });
-          });
-
-        anno.addHandler('onAnnotationRemoved', function(annotation) {
-          annotation.context=annotation.context.split("?")[0]; 
-          // if the item page has querystring parameters, 
-          // this causes the JSON.parse to fail on the server, so just strip them off here
-          // alert(JSON.stringify(annotation))
-          jQuery.ajax({
-            type: "DELETE",
-            url: "http://192.168.99.100/annotations/" + annotation.id,
-            dataType: "JSON",
-            data: JSON.stringify(annotation),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            headers: {
-              'x-annotator-auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb25zdW1lcktleSI6ImQwZTFiY2UwODIzNGY0YzgyMmY0NjliYjU3NjMxOGU0NmU2NTFlMjliYWEwMzczNWJmZTFlMDE0NmMzOTBlN2QiLCJ1c2VySWQiOiJub2JpdGEifQ.DVSukxH1fN5-xUOasPyxxAmdwtUc_MTSwnDDUh1-4cI'
-            },
-            success: function(data) {
-            }
-            });
-          });
-
-        jQuery(document).ready(function(){
-          jQuery.ajax({
-            type: "GET",
-            url: "http://192.168.99.100/annotations",
-            headers: {
-              'x-annotator-auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb25zdW1lcktleSI6ImQwZTFiY2UwODIzNGY0YzgyMmY0NjliYjU3NjMxOGU0NmU2NTFlMjliYWEwMzczNWJmZTFlMDE0NmMzOTBlN2QiLCJ1c2VySWQiOiJub2JpdGEifQ.DVSukxH1fN5-xUOasPyxxAmdwtUc_MTSwnDDUh1-4cI'
-            },
-            success: function(data) {
-              for (var i = 0; i < data.length; i++) {
-                anno.addAnnotation(data[i]);
-              }
-            }
-          });
-        });
-      </script>
     </div>
   </body>
 </html>
