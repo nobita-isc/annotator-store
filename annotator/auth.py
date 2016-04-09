@@ -4,7 +4,8 @@ import iso8601
 import jwt
 import six
 
-DEFAULT_TTL = 86400
+# Default log in time is 7 days
+DEFAULT_TTL = 86400*7
 
 
 class Consumer(object):
